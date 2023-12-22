@@ -3,18 +3,25 @@ module github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch
 go 1.21.5
 
 require (
+	github.com/99designs/gqlgen v0.17.41
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/google/wire v0.5.0
 	github.com/mattn/go-sqlite3 v1.14.19
 	github.com/spf13/viper v1.18.2
 	github.com/streadway/amqp v1.1.0
 	github.com/stretchr/testify v1.8.4
+	github.com/vektah/gqlparser/v2 v2.5.10
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 )
 
 require (
+	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/google/uuid v1.4.0 // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/hashicorp/golang-lru/v2 v2.0.3 // indirect
+	github.com/sosodev/duration v1.1.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231120223509-83a465c0220f // indirect
 )
