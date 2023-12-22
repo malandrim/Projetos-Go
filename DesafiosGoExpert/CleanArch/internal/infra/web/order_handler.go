@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/entity"
+	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/usecase"
 	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/pkg/events"
-	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/usecase"
 )
 
 type WebOrderHandler struct {
