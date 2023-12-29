@@ -35,7 +35,6 @@ func NewGetOrdersListService(getOrdersListUseCase usecase.GetOrdersListUseCase) 
 		GetOrdersListUseCase: getOrdersListUseCase,
 	}
 }
-
 func (s *CreateOrderService) CreateOrder(ctx context.Context, in *pb.OrderRequest) (*pb.OrderResponse, error) {
 	dto := usecase.OrderInputDTO{
 		ID:    in.Id,

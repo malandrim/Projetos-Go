@@ -10,10 +10,9 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/graph"
 
-	service "github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/infra/grpc"
-
 	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/configs"
 	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/event/handler"
+	service "github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/infra/grpc"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
