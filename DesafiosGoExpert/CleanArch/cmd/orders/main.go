@@ -12,8 +12,7 @@ import (
 
 	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/configs"
 	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/event/handler"
-	service "github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/infra/grpc"
-
+	service "github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/infra/grpc/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -60,7 +59,7 @@ func main() {
 	go webserver.Start()
 
 	grpcServer := grpc.NewServer()
-	createOrderService := service.NewOrderService(*createOrderUseCase)
+	createOrderService := service.NewCreateOrderService(*createOrderUseCase)
 	pb.RegisterOrderServiceServer(grpcServer, createOrderService)
 	reflection.Register(grpcServer)
 
