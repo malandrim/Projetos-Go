@@ -23,19 +23,19 @@ func NewGetOrderUseCase(
 	}
 }
 
-func (c *GetOrderUseCase) Execute(OrderId string) (OrderOutputDTO, error) {
+func (g *GetOrderUseCase) Execute(id string) (*OrderOutputDTO, error) {
+	var order *entity.Order
 
-	var order entity.Order
+	order, err := g.OrderRepository.FindByID(id)
+	if err != nil {
+		return &OrderOutputDTO{}, err
+	}
 
-	order = c.GetOrder.GetOrderById(OrderId)
-
-	c.GetOrder.SetPayload(order)
-	c.EventDispatcher.Dispatch(c.GetOrder)
-
-	return OrderOutputDTO{
+	return &OrderOutputDTO{
 		ID:         order.ID,
 		Price:      order.Price,
 		Tax:        order.Tax,
 		FinalPrice: order.FinalPrice,
 	}, nil
+
 }

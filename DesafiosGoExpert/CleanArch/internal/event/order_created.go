@@ -2,19 +2,19 @@ package event
 
 import (
 	"time"
-
-	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/entity"
 )
 
 type OrderCreated struct {
 	Name    string
 	Payload interface{}
-	Order   entity.Order
-	Orders  []entity.Order
 }
-
 type GetOrder struct {
-	Order interface{}
+	Name    string
+	Payload interface{}
+}
+type GetOrdersList struct {
+	Name    string
+	Payload interface{}
 }
 
 func NewOrderCreated() *OrderCreated {
@@ -22,17 +22,17 @@ func NewOrderCreated() *OrderCreated {
 		Name: "OrderCreated",
 	}
 }
-
-func (e *GetOrder) GetOrderById(id string) interface{} {
-	return e.Order
+func NewGetOrder() *GetOrder {
+	return &GetOrder{
+		Name: "GetOrder",
+	}
+}
+func NewGetOrdersList() *GetOrdersList {
+	return &GetOrdersList{
+		Name: "GetOrdersList",
+	}
 }
 
-func (e *OrderCreated) GetOrderById(id string) entity.Order {
-	return e.Order
-}
-func (e *OrderCreated) GetOrders() []entity.Order {
-	return e.Orders
-}
 func (e *OrderCreated) GetName() string {
 	return e.Name
 }
@@ -46,5 +46,41 @@ func (e *OrderCreated) SetPayload(payload interface{}) {
 }
 
 func (e *OrderCreated) GetDateTime() time.Time {
+	return time.Now()
+}
+
+//
+
+func (e *GetOrder) GetName() string {
+	return e.Name
+}
+
+func (e *GetOrder) GetPayload() interface{} {
+	return e.Payload
+}
+
+func (e *GetOrder) SetPayload(payload interface{}) {
+	e.Payload = payload
+}
+
+func (e *GetOrder) GetDateTime() time.Time {
+	return time.Now()
+}
+
+//
+
+func (e *GetOrdersList) GetName() string {
+	return e.Name
+}
+
+func (e *GetOrdersList) GetPayload() interface{} {
+	return e.Payload
+}
+
+func (e *GetOrdersList) SetPayload(payload interface{}) {
+	e.Payload = payload
+}
+
+func (e *GetOrdersList) GetDateTime() time.Time {
 	return time.Now()
 }

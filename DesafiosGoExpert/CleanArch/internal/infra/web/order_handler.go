@@ -48,25 +48,68 @@ func (h *WebOrderHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *WebOrderHandler) GetOrderById(w http.ResponseWriter, r *http.Request) {
+// /////
+type WebGetOrderHandler struct {
+	EventDispatcher events.EventDispatcherInterface
+	OrderRepository entity.OrderRepositoryInterface
+	GetOrderEvent   events.EventInterface
+}
+
+func NewWebGetOrderHandler(
+	EventDispatcher events.EventDispatcherInterface,
+	OrderRepository entity.OrderRepositoryInterface,
+	GetOrderEvent events.EventInterface,
+) *WebGetOrderHandler {
+	return &WebGetOrderHandler{
+		EventDispatcher: EventDispatcher,
+		OrderRepository: OrderRepository,
+		GetOrderEvent:   GetOrderEvent,
+	}
+}
+
+func (h *WebGetOrderHandler) GetOrder(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	output, err := h.OrderRepository.FindByID(id)
+
+	getOrder := usecase.NewGetOrderUseCase(h.OrderRepository, h.GetOrderEvent, h.EventDispatcher)
+	output, err := getOrder.Execute(id)
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(output)
+	err = json.NewEncoder(w).Encode(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
-func (h *WebOrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
-	output, err := h.OrderRepository.FindAll()
+// //////
+type WebGetOrdersListHandler struct {
+	EventDispatcher    events.EventDispatcherInterface
+	OrderRepository    entity.OrderRepositoryInterface
+	GetOrdersListEvent events.EventInterface
+}
+
+func NewWebGetOrdersListHandler(
+	EventDispatcher events.EventDispatcherInterface,
+	OrderRepository entity.OrderRepositoryInterface,
+	GetOrdersListEvent events.EventInterface,
+) *WebGetOrdersListHandler {
+	return &WebGetOrdersListHandler{
+		EventDispatcher:    EventDispatcher,
+		OrderRepository:    OrderRepository,
+		GetOrdersListEvent: GetOrdersListEvent,
+	}
+}
+
+func (h *WebGetOrdersListHandler) GetOrdersList(w http.ResponseWriter, r *http.Request) {
+
+	OrderList := usecase.NewGetOrdersListUseCase(h.OrderRepository, h.GetOrdersListEvent, h.EventDispatcher)
+	output, err := OrderList.OrderRepository.FindAll()
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return

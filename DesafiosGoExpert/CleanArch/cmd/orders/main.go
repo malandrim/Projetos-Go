@@ -8,16 +8,21 @@ import (
 
 	graphql_handler "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/graph"
+
+	service "github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/infra/grpc"
+
 	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/configs"
 	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/event/handler"
-	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/infra/graph"
-	service "github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/infra/grpc"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+
 	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/infra/grpc/pb"
 	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/infra/web/webserver"
 	"github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/pkg/events"
+
 	"github.com/streadway/amqp"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -34,7 +39,7 @@ func main() {
 	}
 	defer db.Close()
 
-	rabbitMQChannel := getRabbitMQChannel()
+	rabbitMQChannel := getRabbitMQChannel(configs.RMQUser, configs.RMQPassword, configs.RMQHost, configs.RMQServerPort)
 
 	eventDispatcher := events.NewEventDispatcher()
 	eventDispatcher.Register("OrderCreated", &handler.OrderCreatedHandler{
@@ -44,10 +49,14 @@ func main() {
 	createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
 
 	webserver := webserver.NewWebServer(configs.WebServerPort)
+
 	webOrderHandler := NewWebOrderHandler(db, eventDispatcher)
-	webserver.AddHandler("/order", webOrderHandler.Create)
-	webserver.AddHandler("/order", webOrderHandler.GetOrderById)
-	webserver.AddHandler("/orders", webOrderHandler.GetOrders)
+	webGetOrderHandler := NewWebGetOrderHandler(db, eventDispatcher)
+	webGetOrdersListHandler := NewWebGetOrdersListHandler(db, eventDispatcher)
+
+	webserver.AddHandlerPost("/order", webOrderHandler.Create)
+	webserver.AddHandlerGet("/order", webGetOrderHandler.GetOrder)
+	webserver.AddHandlerGet("/orders", webGetOrdersListHandler.GetOrdersList)
 	fmt.Println("Starting web server on port", configs.WebServerPort)
 	go webserver.Start()
 
@@ -74,8 +83,8 @@ func main() {
 
 }
 
-func getRabbitMQChannel() *amqp.Channel {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/") // alterar para variavel de ambiente
+func getRabbitMQChannel(user, pass, host, port string) *amqp.Channel {
+	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%s/", user, pass, host, port))
 	if err != nil {
 		panic(err)
 	}

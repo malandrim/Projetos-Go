@@ -30,6 +30,20 @@ func NewCreateOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInt
 	return createOrderUseCase
 }
 
+func NewGetOrdersListUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.GetOrdersListUseCase {
+	orderRepository := database.NewOrderRepository(db)
+	getOrdersList := event.NewGetOrdersList()
+	getOrdersListUseCase := usecase.NewGetOrdersListUseCase(orderRepository, getOrdersList, eventDispatcher)
+	return getOrdersListUseCase
+}
+
+func NewGetOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.GetOrderUseCase {
+	orderRepository := database.NewOrderRepository(db)
+	getOrder := event.NewGetOrder()
+	getOrderUseCase := usecase.NewGetOrderUseCase(orderRepository, getOrder, eventDispatcher)
+	return getOrderUseCase
+}
+
 func NewWebOrderHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebOrderHandler {
 	orderRepository := database.NewOrderRepository(db)
 	orderCreated := event.NewOrderCreated()
@@ -37,10 +51,36 @@ func NewWebOrderHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterf
 	return webOrderHandler
 }
 
+func NewWebGetOrderHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebGetOrderHandler {
+	orderRepository := database.NewOrderRepository(db)
+	getOrder := event.NewGetOrder()
+	webGetOrderHandler := web.NewWebGetOrderHandler(eventDispatcher, orderRepository, getOrder)
+	return webGetOrderHandler
+}
+
+func NewWebGetOrdersListHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebGetOrdersListHandler {
+	orderRepository := database.NewOrderRepository(db)
+	getOrdersList := event.NewGetOrdersList()
+	webGetOrdersListHandler := web.NewWebGetOrdersListHandler(eventDispatcher, orderRepository, getOrdersList)
+	return webGetOrdersListHandler
+}
+
 // wire.go:
 
 var setOrderRepositoryDependency = wire.NewSet(database.NewOrderRepository, wire.Bind(new(entity.OrderRepositoryInterface), new(*database.OrderRepository)))
 
+var setGetOrderRepositoryDependency = wire.NewSet(database.NewOrderRepository, wire.Bind(new(entity.OrderRepositoryInterface), new(*database.OrderRepository)))
+
+var setGetOrdersListRepositoryDependency = wire.NewSet(database.NewOrderRepository, wire.Bind(new(entity.OrderRepositoryInterface), new(*database.OrderRepository)))
+
 var setEventDispatcherDependency = wire.NewSet(events.NewEventDispatcher, event.NewOrderCreated, wire.Bind(new(events.EventInterface), new(*event.OrderCreated)), wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)))
 
+var setGetOrderEventDispatcherDependency = wire.NewSet(events.NewEventDispatcher, event.NewOrderCreated, wire.Bind(new(events.EventInterface), new(*event.OrderCreated)), wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)))
+
+var setGetOrdersListEventDispatcherDependency = wire.NewSet(events.NewEventDispatcher, event.NewOrderCreated, wire.Bind(new(events.EventInterface), new(*event.OrderCreated)), wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)))
+
 var setOrderCreatedEvent = wire.NewSet(event.NewOrderCreated, wire.Bind(new(events.EventInterface), new(*event.OrderCreated)))
+
+var setGetOrderEvent = wire.NewSet(event.NewGetOrder, wire.Bind(new(events.EventInterface), new(*event.GetOrder)))
+
+var setGetOrdersListEvent = wire.NewSet(event.NewGetOrdersList, wire.Bind(new(events.EventInterface), new(*event.GetOrdersList)))

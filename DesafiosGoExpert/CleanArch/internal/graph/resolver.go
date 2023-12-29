@@ -8,4 +8,6 @@ import "github.com/malandrim/Projetos-Go/DesafiosGoExpert/CleanArch/internal/use
 
 type Resolver struct {
 	CreateOrderUseCase usecase.CreateOrderUseCase
+	GetOrder           usecase.GetOrderUseCase
+	GetOrdersList      usecase.GetOrdersListUseCase
 }
